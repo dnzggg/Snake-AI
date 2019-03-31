@@ -92,27 +92,31 @@ class Genetic:
 
         p1_input_layer_to_hidden_layer = parent1_neural['inputLayerToHiddenLayer']
         p1_hidden_layer_to_output = parent1_neural['hiddenLayerToOutput']
+
         p2_input_layer_to_hidden_layer = parent2_neural['inputLayerToHiddenLayer']
         p2_hidden_layer_to_output = parent2_neural['hiddenLayerToOutput']
+
         c_input_layer_to_hidden_layer = child['inputLayerToHiddenLayer']
         c_hidden_layer_to_output = child['hiddenLayerToOutput']
 
         for hidden in range(5):
             if not self.mutate():
                 if random.randint(0, 1) == 0:
-                    c_hidden_layer_to_output[str(hidden)] = p1_hidden_layer_to_output
+                    c_hidden_layer_to_output[str(hidden)] = p1_hidden_layer_to_output[str(hidden)]
                 else:
-                    c_hidden_layer_to_output[str(hidden)] = p2_hidden_layer_to_output
+                    c_hidden_layer_to_output[str(hidden)] = p2_hidden_layer_to_output[str(hidden)]
             else:
                 c_hidden_layer_to_output[str(hidden)] = random.random()
             for inputs in range(4):
                 if not self.mutate():
                     if random.randint(0, 1) == 0:
-                        c_input_layer_to_hidden_layer[str(inputs)] = p1_input_layer_to_hidden_layer
+                        c_input_layer_to_hidden_layer[str(inputs)][str(hidden)] = \
+                        p1_input_layer_to_hidden_layer[str(inputs)][str(hidden)]
                     else:
-                        c_input_layer_to_hidden_layer[str(inputs)] = p2_input_layer_to_hidden_layer
+                        c_input_layer_to_hidden_layer[str(inputs)][str(hidden)] = \
+                        p2_input_layer_to_hidden_layer[str(inputs)][str(hidden)]
                 else:
-                    c_input_layer_to_hidden_layer[str(inputs)] = random.random()
+                    c_input_layer_to_hidden_layer[str(inputs)][str(hidden)] = random.random()
 
     def mutate(self):
         # mutate the child with the mutation rate
@@ -120,8 +124,6 @@ class Genetic:
             return True
         else:
             return False
-
-
 
     @staticmethod
     def calculate_input(env):
