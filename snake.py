@@ -9,12 +9,13 @@ os.environ = [100, 10]
 
 
 class Environment:
-    def __init__(self):
+    def __init__(self, title):
         pygame.init()
         self.w, self.h = (1280, 720)
         self.screen = pygame.display.set_mode((self.w, self.h), pygame.HWSURFACE)
+        pygame.display.set_caption("Generation: " + str(title))
         self.clock = pygame.time.Clock()
-        self.snake_pos = [[40, 40]]
+        self.snake_pos = [[400, 400]]
         self.snake_length = 1
         self.previous_distance = 0
         self.cont = True
@@ -47,14 +48,33 @@ class Environment:
             self.move = "right"
 
     def neural_input(self, output):
-        if output < 0.25 and self.move != "down":
-            self.move = "up"
-        elif output < 5 and self.move != "right":
-            self.move = "left"
-        elif output < 0.75 and self.move != "up":
-            self.move = "down"
-        elif output <= 1 and self.move != "left":
-            self.move = "right"
+        if output < 0.8:
+            move = "left"
+        elif output < 0.9:
+            move = "straight"
+        else:
+            move = "right"
+
+        if self.move == "right":
+            if move == "left":
+                self.move = "up"
+            elif move == "right":
+                self.move = "down"
+        elif self.move == "left":
+            if move == "left":
+                self.move = "down"
+            elif move == "right":
+                self.move = "up"
+        elif self.move == "up":
+            if move == "left":
+                self.move = "left"
+            elif move == "right":
+                self.move = "right"
+        elif self.move == "down":
+            if move == "left":
+                self.move = "left"
+            elif move == "right":
+                self.move = "right"
 
     def update(self):
         snake = self.snake_pos[0]

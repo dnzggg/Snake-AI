@@ -5,8 +5,8 @@ import math
 
 
 class Genetic:
-    def __init__(self, population):
-        self.generation = 0
+    def __init__(self, population, generation):
+        self.generation = generation
         self.population = population
         self.mutation_rate = 0.05
 
@@ -48,7 +48,7 @@ class Genetic:
         # 1 point when it gets closer to food -1.5 point when it moves away 10 points when eats food
         for neural in self.neurals:
 
-            env = snake.Environment()
+            env = snake.Environment(self.generation)
 
             while env.cont:
                 env.screen.fill((0, 0, 0))
@@ -72,8 +72,16 @@ class Genetic:
         neural = self.neural
         n = parents = self.neurals
 
-        for i in range(6):
+        for i in range(2):
             best = max(n, key=lambda item: item.score)
+            parents.append(best)
+            parents.append(best)
+            parents.append(best)
+            parents.append(best)
+            n.remove(best)
+        for i in range(4):
+            best = max(n, key=lambda item: item.score)
+            parents.append(best)
             parents.append(best)
             n.remove(best)
 
@@ -111,10 +119,10 @@ class Genetic:
                 if not self.mutate():
                     if random.randint(0, 1) == 0:
                         c_input_layer_to_hidden_layer[str(inputs)][str(hidden)] = \
-                        p1_input_layer_to_hidden_layer[str(inputs)][str(hidden)]
+                            p1_input_layer_to_hidden_layer[str(inputs)][str(hidden)]
                     else:
                         c_input_layer_to_hidden_layer[str(inputs)][str(hidden)] = \
-                        p2_input_layer_to_hidden_layer[str(inputs)][str(hidden)]
+                            p2_input_layer_to_hidden_layer[str(inputs)][str(hidden)]
                 else:
                     c_input_layer_to_hidden_layer[str(inputs)][str(hidden)] = random.random()
 
@@ -237,4 +245,6 @@ class NeuralNetwork:
         return output
 
 
-gen = Genetic(15)
+for i in range(1000):
+    print("Generation: " + str(i))
+    gen = Genetic(15, i)
