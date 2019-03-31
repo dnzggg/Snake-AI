@@ -1,6 +1,8 @@
+import math
+import os
 import random
 import sys
-import os
+
 import pygame
 
 os.environ = [10, 10]
@@ -14,6 +16,7 @@ class Environment:
         self.clock = pygame.time.Clock()
         self.snake_pos = [[40, 40]]
         self.snake_length = 1
+        self.previous_distance = 0
         self.cont = True
         self.food_pos = [random.randint(1, self.w / 20 - 1) * 20, random.randint(1, self.h / 20 - 1) * 20]
         self.move = "right"
@@ -50,7 +53,7 @@ class Environment:
             self.move = "left"
         elif output < 0.75 and self.move != "up":
             self.move = "down"
-        elif output < 1 and self.move != "left":
+        elif output <= 1 and self.move != "left":
             self.move = "right"
 
     def update(self):
@@ -89,11 +92,12 @@ class Environment:
 
         pygame.draw.ellipse(self.screen, (255, 0, 0), pygame.Rect(self.food_pos[0], self.food_pos[1], 20, 20))
 
-    def look_for_collision(self):
+    def look_for_collision(self, neural):
         snake_pos = self.snake_pos[0]
         if snake_pos == self.food_pos:
             self.snake_length += 1
             self.food_pos = [random.randint(1, self.w / 20 - 1) * 20, random.randint(1, self.h / 20 - 1) * 20]
+            neural.score += 10
         if snake_pos[0] < 0:
             self.cont = False
         elif snake_pos[0] > self.w:
@@ -111,6 +115,19 @@ class Environment:
 
     def position_of_snake(self):
         return self.snake_pos[-1]
+
+    def length(self, x, y):
+        return math.sqrt(x ** 2 + y ** 2)
+
+    def distance_to(self):
+        return self.length(self.snake_pos[-1][0] - self.food_pos[0], self.snake_pos[-1][1] - self.food_pos[1])
+
+    def point_system(self, neural):
+        if self.previous_distance > self.distance_to():
+            neural.score += 1
+        else:
+            neural.score -= 1.5
+        self.previous_distance = self.distance_to()
 
 
 # repeats game

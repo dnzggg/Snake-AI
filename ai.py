@@ -54,7 +54,9 @@ class Genetic:
                 env.screen.fill((0, 0, 0))
                 env.draw()
                 env.look_for_input()
-                env.look_for_collision()
+
+                env.look_for_collision(neural)
+                env.point_system(neural)
 
                 inputs = self.calculate_input(env)
                 output = neural.calculate_output(inputs)
@@ -80,8 +82,6 @@ class Genetic:
         right_input = 0
         left_input = 0
         front_input = 0
-
-        print(env.position_of_snake(), env.food_pos)
 
         if env.move == 'up':
             if env.food_pos[1] == env.position_of_snake()[1]:
