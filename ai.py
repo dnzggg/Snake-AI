@@ -65,17 +65,63 @@ class Genetic:
                 env.clock.tick(20)
                 snake.pygame.display.flip()
 
+        self.selection()
+
     def selection(self):
         # based on fitness function
-        pass
+        neural = self.neural
+        n = parents = self.neurals
 
-    def crossover(self):
+        for i in range(6):
+            best = max(n, key=lambda item: item.score)
+            parents.append(best)
+            n.remove(best)
+
+        for i in range(self.population):
+            parent1, parent2 = random.sample(parents, 2)
+            self.crossover(i, neural, parent1, parent2)
+
+        self.neural = neural
+        self.dict_to_file(self.neural)
+
+    def crossover(self, i, neural, p1, p2):
         # from selected parents make child
-        pass
+        parent1_neural = self.neural[str(p1.person)]
+        parent2_neural = self.neural[str(p2.person)]
+        child = neural[str(i)]
 
-    def mutation(self):
+        p1_input_layer_to_hidden_layer = parent1_neural['inputLayerToHiddenLayer']
+        p1_hidden_layer_to_output = parent1_neural['hiddenLayerToOutput']
+        p2_input_layer_to_hidden_layer = parent2_neural['inputLayerToHiddenLayer']
+        p2_hidden_layer_to_output = parent2_neural['hiddenLayerToOutput']
+        c_input_layer_to_hidden_layer = child['inputLayerToHiddenLayer']
+        c_hidden_layer_to_output = child['hiddenLayerToOutput']
+
+        for hidden in range(5):
+            if not self.mutate():
+                if random.randint(0, 1) == 0:
+                    c_hidden_layer_to_output[str(hidden)] = p1_hidden_layer_to_output
+                else:
+                    c_hidden_layer_to_output[str(hidden)] = p2_hidden_layer_to_output
+            else:
+                c_hidden_layer_to_output[str(hidden)] = random.random()
+            for inputs in range(4):
+                if not self.mutate():
+                    if random.randint(0, 1) == 0:
+                        c_input_layer_to_hidden_layer[str(inputs)] = p1_input_layer_to_hidden_layer
+                    else:
+                        c_input_layer_to_hidden_layer[str(inputs)] = p2_input_layer_to_hidden_layer
+                else:
+                    c_input_layer_to_hidden_layer[str(inputs)] = random.random()
+
+    def mutate(self):
         # mutate the child with the mutation rate
-        pass
+        if random.random() < self.mutation_rate:
+            return True
+        else:
+            return False
+
+
 
     @staticmethod
     def calculate_input(env):

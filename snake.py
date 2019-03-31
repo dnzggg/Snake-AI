@@ -5,7 +5,7 @@ import sys
 
 import pygame
 
-os.environ = [10, 10]
+os.environ = [100, 10]
 
 
 class Environment:
