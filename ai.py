@@ -1,6 +1,7 @@
 import json
 import random
 import snake
+import math
 
 
 class Genetic:
@@ -80,6 +81,50 @@ class NeuralNetwork:
     def dict_to_file(dictionary):
         with open("neurals.json", "w") as f:
             json.dump(dictionary, f, indent=4)
+
+    @staticmethod
+    def sigmoid(value):
+        new_value = 1 / (1 + math.e ** -value)
+        return new_value
+
+    def calculate_output(self, inputs):
+        input1 = inputs[0]
+        input2 = inputs[1]
+        input3 = inputs[2]
+        input4 = inputs[3]
+
+        input_layer_to_hidden_layer = self.neural['inputLayerToHiddenLayer']
+
+        hidden1 = input1 * input_layer_to_hidden_layer["0"]["0"] + input2 * input_layer_to_hidden_layer["1"]
+        ["0"] + input3 * input_layer_to_hidden_layer["2"]["0"] + input4 * input_layer_to_hidden_layer["3"]["0"]
+
+        hidden2 = input1 * input_layer_to_hidden_layer["0"]["1"] + input2 * input_layer_to_hidden_layer["1"]
+        ["1"] + input3 * input_layer_to_hidden_layer["2"]["1"] + input4 * input_layer_to_hidden_layer["3"]["1"]
+
+        hidden3 = input1 * input_layer_to_hidden_layer["0"]["2"] + input2 * input_layer_to_hidden_layer["1"]
+        ["2"] + input3 * input_layer_to_hidden_layer["2"]["2"] + input4 * input_layer_to_hidden_layer["3"]["2"]
+
+        hidden4 = input1 * input_layer_to_hidden_layer["0"]["3"] + input2 * input_layer_to_hidden_layer["1"]
+        ["3"] + input3 * input_layer_to_hidden_layer["2"]["3"] + input4 * input_layer_to_hidden_layer["3"]["3"]
+
+        hidden5 = input1 * input_layer_to_hidden_layer["0"]["4"] + input2 * input_layer_to_hidden_layer["1"]
+        ["4"] + input3 * input_layer_to_hidden_layer["2"]["4"] + input4 * input_layer_to_hidden_layer["3"]["4"]
+
+        sigmoid_hidden1 = self.sigmoid(hidden1)
+        sigmoid_hidden2 = self.sigmoid(hidden2)
+        sigmoid_hidden3 = self.sigmoid(hidden3)
+        sigmoid_hidden4 = self.sigmoid(hidden4)
+        sigmoid_hidden5 = self.sigmoid(hidden5)
+
+        hidden_layer_to_output = self.neural['hiddenLayerToOutput']
+
+        sum_of_output = sigmoid_hidden1 * hidden_layer_to_output["0"] + sigmoid_hidden2 * hidden_layer_to_output[
+            "1"] + sigmoid_hidden3 * hidden_layer_to_output["2"] + sigmoid_hidden4 * hidden_layer_to_output[
+                  "3"] + sigmoid_hidden5 * hidden_layer_to_output["4"]
+
+        output = self.sigmoid(sum_of_output)
+
+        return output
 
 
 gen = Genetic(15)
