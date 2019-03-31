@@ -11,7 +11,7 @@ class Genetic:
         self.mutation_rate = 0.05
 
         self.neural = dict
-        self.parents = []
+        self.neurals = []
 
         self.create_population()
 
@@ -29,20 +29,24 @@ class Genetic:
         self.neural = self.file_to_dict()
 
         for i in range(self.population):
-            population = self.neural[str(i)]
+            self.neurals.append(NeuralNetwork(i))
 
-            input_layer_to_hidden_layer = population['inputLayerToHiddenLayer']
-            hidden_layer_to_output = population['hiddenLayerToOutput']
+            # running for the first time
+            # population = self.neural[str(i)]
+            # input_layer_to_hidden_layer = population['inputLayerToHiddenLayer']
+            # hidden_layer_to_output = population['hiddenLayerToOutput']
+            #
+            # for hidden in range(5):
+            #     # hidden_layer_to_output[str(hidden)] = random.random()
+            #     for inputs in range(4):
+            #         # input_layer_to_hidden_layer[str(inputs)][str(hidden)] = random.random()
+            #         pass
 
-            for hidden in range(5):
-                # hidden_layer_to_output[str(hidden)] = random.random()
-                for inputs in range(4):
-                    # input_layer_to_hidden_layer[str(inputs)][str(hidden)] = random.random()
-                    pass
+        self.fitness()
 
     def fitness(self):
         # 1 point when it gets closer to food -1.5 point when it moves away 10 points when eats food
-        for i in range(self.population):
+        for neural in self.neurals:
 
             env = snake.Environment()
 
@@ -51,6 +55,11 @@ class Genetic:
                 env.draw()
                 env.look_for_input()
                 env.look_for_collision()
+
+                inputs = self.calculate_input(env)
+                output = neural.calculate_output(inputs)
+                env.neural_input(output)
+
                 env.clock.tick(20)
                 snake.pygame.display.flip()
 
@@ -66,11 +75,64 @@ class Genetic:
         # mutate the child with the mutation rate
         pass
 
+    @staticmethod
+    def calculate_input(env):
+        right_input = 0
+        left_input = 0
+        front_input = 0
+
+        print(env.position_of_snake(), env.food_pos)
+
+        if env.move == 'up':
+            if env.food_pos[1] == env.position_of_snake()[1]:
+                if env.food_pos[0] > env.position_of_snake()[0]:
+                    right_input = 1
+                elif env.food_pos[0] < env.position_of_snake()[0]:
+                    left_input = 1
+            elif env.food_pos[0] == env.position_of_snake()[0]:
+                if env.food_pos[1] < env.position_of_snake()[1]:
+                    front_input = 1
+        elif env.move == 'down':
+            if env.food_pos[1] == env.position_of_snake()[1]:
+                if env.food_pos[0] > env.position_of_snake()[0]:
+                    left_input = 1
+                elif env.food_pos[0] < env.position_of_snake()[0]:
+                    right_input = 1
+            elif env.food_pos[0] == env.position_of_snake()[0]:
+                if env.food_pos[1] > env.position_of_snake()[1]:
+                    front_input = 1
+        elif env.move == 'right':
+            if env.food_pos[0] == env.position_of_snake()[0]:
+                if env.food_pos[1] > env.position_of_snake()[1]:
+                    right_input = 1
+                elif env.food_pos[1] < env.position_of_snake()[1]:
+                    left_input = 1
+            elif env.food_pos[1] == env.position_of_snake()[1]:
+                if env.food_pos[0] > env.position_of_snake()[0]:
+                    front_input = 1
+        elif env.move == 'left':
+            if env.food_pos[0] == env.position_of_snake()[0]:
+                if env.food_pos[1] > env.position_of_snake()[1]:
+                    left_input = 1
+                elif env.food_pos[1] < env.position_of_snake()[1]:
+                    right_input = 1
+            elif env.food_pos[1] == env.position_of_snake()[1]:
+                if env.food_pos[0] < env.position_of_snake()[0]:
+                    front_input = 1
+
+        angle_input = math.atan2(env.food_pos[1] - env.position_of_snake()[1],
+                                 env.food_pos[0] - env.position_of_snake()[0])
+        angle_input = math.degrees(angle_input)
+        angle_input /= 180
+
+        return [right_input, left_input, front_input, angle_input]
+
 
 class NeuralNetwork:
     def __init__(self, person):
         self.person = person
         self.neural = self.file_to_dict()[str(person)]
+        self.score = 0
 
     @staticmethod
     def file_to_dict():
@@ -95,20 +157,20 @@ class NeuralNetwork:
 
         input_layer_to_hidden_layer = self.neural['inputLayerToHiddenLayer']
 
-        hidden1 = input1 * input_layer_to_hidden_layer["0"]["0"] + input2 * input_layer_to_hidden_layer["1"]
-        ["0"] + input3 * input_layer_to_hidden_layer["2"]["0"] + input4 * input_layer_to_hidden_layer["3"]["0"]
+        hidden1 = input1 * input_layer_to_hidden_layer["0"]["0"] + input2 * input_layer_to_hidden_layer["1"][
+            "0"] + input3 * input_layer_to_hidden_layer["2"]["0"] + input4 * input_layer_to_hidden_layer["3"]["0"]
 
-        hidden2 = input1 * input_layer_to_hidden_layer["0"]["1"] + input2 * input_layer_to_hidden_layer["1"]
-        ["1"] + input3 * input_layer_to_hidden_layer["2"]["1"] + input4 * input_layer_to_hidden_layer["3"]["1"]
+        hidden2 = input1 * input_layer_to_hidden_layer["0"]["1"] + input2 * input_layer_to_hidden_layer["1"][
+            "1"] + input3 * input_layer_to_hidden_layer["2"]["1"] + input4 * input_layer_to_hidden_layer["3"]["1"]
 
-        hidden3 = input1 * input_layer_to_hidden_layer["0"]["2"] + input2 * input_layer_to_hidden_layer["1"]
-        ["2"] + input3 * input_layer_to_hidden_layer["2"]["2"] + input4 * input_layer_to_hidden_layer["3"]["2"]
+        hidden3 = input1 * input_layer_to_hidden_layer["0"]["2"] + input2 * input_layer_to_hidden_layer["1"][
+            "2"] + input3 * input_layer_to_hidden_layer["2"]["2"] + input4 * input_layer_to_hidden_layer["3"]["2"]
 
-        hidden4 = input1 * input_layer_to_hidden_layer["0"]["3"] + input2 * input_layer_to_hidden_layer["1"]
-        ["3"] + input3 * input_layer_to_hidden_layer["2"]["3"] + input4 * input_layer_to_hidden_layer["3"]["3"]
+        hidden4 = input1 * input_layer_to_hidden_layer["0"]["3"] + input2 * input_layer_to_hidden_layer["1"][
+            "3"] + input3 * input_layer_to_hidden_layer["2"]["3"] + input4 * input_layer_to_hidden_layer["3"]["3"]
 
-        hidden5 = input1 * input_layer_to_hidden_layer["0"]["4"] + input2 * input_layer_to_hidden_layer["1"]
-        ["4"] + input3 * input_layer_to_hidden_layer["2"]["4"] + input4 * input_layer_to_hidden_layer["3"]["4"]
+        hidden5 = input1 * input_layer_to_hidden_layer["0"]["4"] + input2 * input_layer_to_hidden_layer["1"][
+            "4"] + input3 * input_layer_to_hidden_layer["2"]["4"] + input4 * input_layer_to_hidden_layer["3"]["4"]
 
         sigmoid_hidden1 = self.sigmoid(hidden1)
         sigmoid_hidden2 = self.sigmoid(hidden2)
@@ -120,7 +182,7 @@ class NeuralNetwork:
 
         sum_of_output = sigmoid_hidden1 * hidden_layer_to_output["0"] + sigmoid_hidden2 * hidden_layer_to_output[
             "1"] + sigmoid_hidden3 * hidden_layer_to_output["2"] + sigmoid_hidden4 * hidden_layer_to_output[
-                  "3"] + sigmoid_hidden5 * hidden_layer_to_output["4"]
+                            "3"] + sigmoid_hidden5 * hidden_layer_to_output["4"]
 
         output = self.sigmoid(sum_of_output)
 

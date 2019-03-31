@@ -43,6 +43,16 @@ class Environment:
         elif (event.key == pygame.K_d) or (event.key == pygame.K_RIGHT) and self.move != "left":
             self.move = "right"
 
+    def neural_input(self, output):
+        if output < 0.25 and self.move != "down":
+            self.move = "up"
+        elif output < 5 and self.move != "right":
+            self.move = "left"
+        elif output < 0.75 and self.move != "up":
+            self.move = "down"
+        elif output < 1 and self.move != "left":
+            self.move = "right"
+
     def update(self):
         snake = self.snake_pos[0]
         if self.move == "right":
@@ -98,6 +108,9 @@ class Environment:
             if pos == snake_pos:
                 self.cont = False
         """
+
+    def position_of_snake(self):
+        return self.snake_pos[-1]
 
 
 # repeats game
