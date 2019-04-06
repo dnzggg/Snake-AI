@@ -4,6 +4,8 @@ import snake
 import math
 
 
+# a
+
 class Genetic:
     def __init__(self, population, generation):
         self.generation = generation
