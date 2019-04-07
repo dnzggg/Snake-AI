@@ -32,17 +32,17 @@ class Genetic:
             self.neurals.append(NeuralNetwork(i))
 
             # running for the first time
-            # population = self.neural[str(i)]
-            # input_layer_to_hidden_layer = population['inputLayerToHiddenLayer']
-            # hidden_layer_to_output = population['hiddenLayerToOutput']
-            #
-            # for hidden in range(5):
-            #     # hidden_layer_to_output[str(hidden)] = random.random()
-            #     for inputs in range(4):
-            #         # input_layer_to_hidden_layer[str(inputs)][str(hidden)] = random.random()
-            #         pass
+            population = self.neural[str(i)]
+            input_layer_to_hidden_layer = population['inputLayerToHiddenLayer']
+            hidden_layer_to_output = population['hiddenLayerToOutput']
 
-        self.fitness()
+            for hidden in range(5):
+                # hidden_layer_to_output[str(hidden)] = random.random()
+                for inputs in range(4):
+                    # input_layer_to_hidden_layer[str(inputs)][str(hidden)] = random.random()
+                    pass
+
+        # self.fitness()
 
     def fitness(self):
         # 1 point when it gets closer to food -1.5 point when it moves away 10 points when eats food
