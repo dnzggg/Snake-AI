@@ -16,10 +16,14 @@ def sigmoid_derivative(value):
 class NeuralNetwork:
     def __init__(self, x, y):
         self.input = x
-        self.w1 = np.random.rand(self.input.shape[1], 4)
-        self.w2 = np.random.rand(4, 1)
+        self.w1 = np.random.uniform(low=-1, high=1, size=(self.input.shape[1], 25))
+        self.w2 = np.random.uniform(low=-1, high=1, size=(25, 1))
         self.y = y
         self.output = np.zeros(y.shape)
+        self.score = 0
+
+    def setInput(self, value):
+        self.input = value
 
     def feed_forward(self):
         self.layer1 = sigmoid(np.dot(self.input, self.w1))

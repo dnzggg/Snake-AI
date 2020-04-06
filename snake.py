@@ -48,9 +48,9 @@ class Environment:
             self.move = "right"
 
     def neural_input(self, output):
-        if output < 0.8:
+        if output < 0.35:
             move = "left"
-        elif output < 0.9:
+        elif output < 0.65:
             move = "straight"
         else:
             move = "right"
